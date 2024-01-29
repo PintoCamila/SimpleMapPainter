@@ -17,9 +17,8 @@ public class Player extends Rectangle {
     LinkedList<Rectangle> rectangleLinkedList;
 
 
-    public Player(GridFactory gridFactory, Grid grid) {
-        super(GridFactory.PADDING, GridFactory.PADDING, gridFactory.getCellSize(), gridFactory.getCellSize());
-        this.gridFactory = gridFactory;
+    public Player(Grid grid) {
+        super(grid.getPadding(), grid.getPadding(), grid.getCellSize(), grid.getCellSize());
         this.grid = grid;
         setColor(Color.GREEN);
         fill();
@@ -32,6 +31,7 @@ public class Player extends Rectangle {
 
     public class EventHandler implements KeyboardHandler {
         Player player;
+        private boolean isPainting = false;
 
         public EventHandler(Player player) {
             this.player = player;
@@ -70,6 +70,12 @@ public class Player extends Rectangle {
 
             kb.addEventListener(space);
 
+            KeyboardEvent spaceLift = new KeyboardEvent();
+            spaceLift.setKeyboardEventType(KeyboardEventType.KEY_RELEASED);
+            spaceLift.setKey(KeyboardEvent.KEY_SPACE);
+
+            kb.addEventListener(spaceLift);
+
             KeyboardEvent save = new KeyboardEvent();
             save.setKeyboardEventType(KeyboardEventType.KEY_PRESSED);
             save.setKey(KeyboardEvent.KEY_S);
@@ -82,6 +88,12 @@ public class Player extends Rectangle {
 
             kb.addEventListener(load);
 
+            KeyboardEvent clear = new KeyboardEvent();
+            load.setKeyboardEventType(KeyboardEventType.KEY_PRESSED);
+            load.setKey(KeyboardEvent.KEY_X);
+
+            kb.addEventListener(clear);
+
         }
 
 
@@ -89,50 +101,68 @@ public class Player extends Rectangle {
         public void keyPressed(KeyboardEvent keyboardEvent) {
             switch (keyboardEvent.getKey()) {
                 case KeyboardEvent.KEY_RIGHT:
-                    if (player.getX() + gridFactory.getCellSize() < gridFactory.getWidth()) {
-                        player.translate(gridFactory.getCellSize(), 0);
+                    if (player.getX() + grid.getCellSize() < grid.getWidth()) {
+                        player.translate(grid.getCellSize(), 0);
+
                         break;
                     }
                     break;
                 case KeyboardEvent.KEY_LEFT:
-                    if (player.getX() + gridFactory.getCellSize() > gridFactory.rowToY(1)) {
-                        player.translate(-gridFactory.getCellSize(), 0);
+                    if (player.getX() + grid.getCellSize() > grid.rowToY(1)) {
+                        player.translate(-grid.getCellSize(), 0);
+
                         break;
                     }
                     break;
                 case KeyboardEvent.KEY_UP:
-                    if (player.getY() + gridFactory.getCellSize() > gridFactory.coltoX(1)) {
-                        player.translate(0, -gridFactory.getCellSize());
+                    if (player.getY() + grid.getCellSize() > grid.coltoX(1)) {
+                        player.translate(0, -grid.getCellSize());
+
                         break;
                     }
                     break;
                 case KeyboardEvent.KEY_DOWN:
-                    if (player.getY() + gridFactory.getCellSize() < gridFactory.getHeight()) {
-                        player.translate(0, gridFactory.getCellSize());
+                    if (player.getY() + grid.getCellSize() < grid.getHeight()) {
+                        player.translate(0, grid.getCellSize());
+
                         break;
                     }
                     break;
                 case KeyboardEvent.KEY_SPACE:
-                    for (Rectangle rectangleEl : rectangleLinkedList) {
-                        if (rectangleEl.getY() == player.getY() && rectangleEl.getX() == player.getX()) {
-                            rectangleEl.draw();
-                            rectangleLinkedList.remove(rectangleEl);
-                            return;
-                        }
-                    }
-                    rectangle1 = new Rectangle(player.getX(), player.getY(), gridFactory.getCellSize(), gridFactory.getCellSize());
-                    rectangle1.fill();
-                    //System.out.println(rectangle1);
+                    isPainting = true;
 
-                    rectangleLinkedList.add(rectangle1);
+                    if (isPainting) {
+
+                        for (Rectangle rectangleEl : rectangleLinkedList) {
+
+                            if (rectangleEl.getY() == player.getY() && rectangleEl.getX() == player.getX()) {
+
+                                rectangleEl.draw();
+                                rectangleLinkedList.remove(rectangleEl);
+
+                                return;
+                            }
+                        }
+                        rectangle1 = new Rectangle(player.getX(), player.getY(), grid.getCellSize(), grid.getCellSize());
+                        paintCell();
+                        rectangleLinkedList.add(rectangle1);
+                    }
                     break;
                 case KeyboardEvent.KEY_S:
+
                     FileManager.writeFile(player.toString());
+
                     break;
                 case KeyboardEvent.KEY_L:
-                    StringToGrid(FileManager.readFile());
-                    break;
 
+                    StringToGrid(FileManager.readFile());
+
+                    break;
+                case KeyboardEvent.KEY_X:
+
+                    eraseAllCells();
+
+                    break;
             }
 
         }
@@ -140,7 +170,32 @@ public class Player extends Rectangle {
 
         @Override
         public void keyReleased(KeyboardEvent keyboardEvent) {
+            if (keyboardEvent.getKey() == KeyboardEvent.KEY_SPACE) {
 
+                isPainting = false;
+
+            }
+
+        }
+
+        public void paintCell() {
+            if (isPainting) {
+                rectangle1 = new Rectangle(player.getX(), player.getY(), grid.getCellSize(), grid.getCellSize());
+                rectangle1.fill();
+
+
+                }
+            }
+
+        public void eraseAllCells() {
+            if (!isPainting) {
+                for (int i = 0; i < rectangleLinkedList.size(); i++) {
+
+                    rectangleLinkedList.get(i).draw();
+
+                }
+                rectangleLinkedList.removeAll(rectangleLinkedList);
+            }
         }
     }
 
@@ -165,7 +220,7 @@ public class Player extends Rectangle {
 
             String[] position = cell.split("/");
 
-            rectangle1 = new Rectangle(Integer.parseInt(position[0]), Integer.parseInt(position[1]), gridFactory.getCellSize(), gridFactory.getCellSize());
+            rectangle1 = new Rectangle(Integer.parseInt(position[0]), Integer.parseInt(position[1]), this.grid.getCellSize(), this.grid.getCellSize());
             rectangle1.fill();
         }
     }

@@ -6,20 +6,18 @@ import org.academiadecodigo.simplegraphics.graphics.Rectangle;
 
 public class Grid extends GridFactory {
 
-    private int cols;
-    private int rows;
-
     private Rectangle grid;
     Player player;
 
     public Grid (int cols, int rows){
         super (cols, rows);
 
+
     }
 
     public void init() {
 
-        grid = new Rectangle(GridFactory.PADDING, GridFactory.PADDING, getWidth(), getHeight());
+        grid = new Rectangle(getPadding(), getPadding(), getWidth(), getHeight());
         grid.setColor(Color.BLACK);
         grid.draw();
         drawLines();
@@ -28,14 +26,14 @@ public class Grid extends GridFactory {
 
 
     public void drawLines(){
-        Line horizontalLine = new Line(GridFactory.PADDING, GridFactory.PADDING + getCellSize(), getWidth() + GridFactory.PADDING, GridFactory.PADDING + getCellSize());
+        Line horizontalLine = new Line(getPadding(), getPadding() + getCellSize(), getWidth() + getPadding(), getPadding() + getCellSize());
         horizontalLine.draw();
         horizontalLine.setColor(Color.BLACK);
 
         for(int i = 1; i <getCols(); i++) {
            if(i < getHeight()){
            int currentCol = coltoX(i);
-           horizontalLine = new Line(GridFactory.PADDING, getCellSize() + currentCol, getWidth() + GridFactory.PADDING, getCellSize() + currentCol);
+           horizontalLine = new Line(getPadding(), getCellSize() + currentCol, getWidth() + getPadding(), getCellSize() + currentCol);
            horizontalLine.draw();
            horizontalLine.setColor(Color.BLACK);
            }
@@ -43,13 +41,13 @@ public class Grid extends GridFactory {
 
 
       }
-        Line verticalLine = new Line(GridFactory.PADDING + getCellSize(), GridFactory.PADDING, GridFactory.PADDING + getCellSize(), getHeight() + GridFactory.PADDING);
+        Line verticalLine = new Line(getPadding() + getCellSize(), getPadding(), getPadding() + getCellSize(), getHeight() + getPadding());
         verticalLine.draw();
         verticalLine.setColor(Color.BLACK);
       for(int j = 1; j <getRows(); j++) {
           if(j < getWidth()) {
               int currentRow = rowToY(j);
-              verticalLine = new Line(currentRow + getCellSize(), GridFactory.PADDING, getCellSize() + currentRow, getHeight() + GridFactory.PADDING);
+              verticalLine = new Line(currentRow + getCellSize(), getPadding(), getCellSize() + currentRow, getHeight() + getPadding());
               verticalLine.draw();
               verticalLine.setColor(Color.BLACK);
 

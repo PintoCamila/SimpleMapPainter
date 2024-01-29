@@ -5,7 +5,7 @@ import org.academiadecodigo.simplegraphics.graphics.Rectangle;
 
 public class GridFactory {
 
-    public static final int PADDING = 10;
+    private static final int PADDING = 10;
     private final int cellSize = 20;
     private int cols;
     private int rows;
@@ -50,6 +50,10 @@ public class GridFactory {
 
     public int getRows(){
         return rows;
+    }
+
+    public int getPadding(){
+      return PADDING;
     }
 
 
